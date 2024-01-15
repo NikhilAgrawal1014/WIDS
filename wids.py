@@ -70,6 +70,14 @@ class LstmRNN(object):
         self.inputs = tf.placeholder(tf.float32, [None, self.num_steps, self.input_size], name="inputs")
         self.targets = tf.placeholder(tf.float32, [None, self.input_size], name="targets")
 
+  """
+     TensorFlow placeholders are used to feed data into the computational graph during training or inference.
+     several placeholder ara as: learning_rate, keep_prob, symbols, inputs, targets.
+     None values in the shape argument of placeholders indicate that the corresponding dimensions can vary during runtime, 
+     allowing the model to handle variable batch sizes.
+     Stock symbols are expected to be passed as integers through the symbols placeholder.
+     targets placeholder is used for the target values the model is trying to predict. """
+        
         def _create_one_cell():
             lstm_cell = tf.contrib.rnn.LSTMCell(self.lstm_size, state_is_tuple=True)
             lstm_cell = tf.contrib.rnn.DropoutWrapper(lstm_cell, output_keep_prob=self.keep_prob)
@@ -85,6 +93,13 @@ class LstmRNN(object):
                 tf.random_uniform([self.stock_count, self.embed_size], -1.0, 1.0),
                 name="embed_matrix"
             )
+
+    """
+            _create_one_cell Method: This method is defined to create an LSTM cell. It uses TensorFlow's LSTMCell 
+            and wraps it with a DropoutWrapper to apply dropout regularization during training.
+            MultiRNNCell for Multiple Layers: The code then uses the _create_one_cell method to create either a single 
+            LSTM cell or a multi-layered LSTM cell (MultiRNNCell).
+            Embedding Matrix: If embedding is specified and there is more than one stock an embedding matrix is created"""
             
             # stock_label_embeds.shape = (batch_size, embedding_size)
             stacked_symbols = tf.tile(self.symbols, [1, self.num_steps], name='stacked_stock_labels')
@@ -100,6 +115,14 @@ class LstmRNN(object):
 
         print "inputs.shape:", self.inputs.shape
         print "inputs_with_embed.shape:", self.inputs_with_embed.shape
+
+      """
+      Summary Operation for Embedding Matrix:
+      It creates a summary operation (tf.summary.histogram) for the embedding matrix, which can be useful for 
+       visualizing and tracking the distribution of values in the embedding matrix during training.
+      If embedding is not used, self.embed_matrix_summ is set to None.
+Print Statements: The code includes two print statements for informational purposes, displaying the shapes of self.inputs and self.inputs_with_embed"""
+
 
         # Run dynamic RNN
         val, state_ = tf.nn.dynamic_rnn(cell, self.inputs_with_embed, dtype=tf.float32, scope="dynamic_rnn")
