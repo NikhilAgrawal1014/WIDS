@@ -70,14 +70,13 @@ class LstmRNN(object):
         self.inputs = tf.placeholder(tf.float32, [None, self.num_steps, self.input_size], name="inputs")
         self.targets = tf.placeholder(tf.float32, [None, self.input_size], name="targets")
 
-  """
-     TensorFlow placeholders are used to feed data into the computational graph during training or inference.
-     several placeholder ara as: learning_rate, keep_prob, symbols, inputs, targets.
-     None values in the shape argument of placeholders indicate that the corresponding dimensions can vary during runtime, 
-     allowing the model to handle variable batch sizes.
-     Stock symbols are expected to be passed as integers through the symbols placeholder.
-     targets placeholder is used for the target values the model is trying to predict. """
-        
+          #TensorFlow placeholders are used to feed data into the computational graph during training or inference.
+     #several placeholder ara as: learning_rate, keep_prob, symbols, inputs, targets.
+     #None values in the shape argument of placeholders indicate that the corresponding dimensions can vary during runtime, 
+     #allowing the model to handle variable batch sizes.
+     #Stock symbols are expected to be passed as integers through the symbols placeholder.
+     #targets placeholder is used for the target values the model is trying to predict. 
+
         def _create_one_cell():
             lstm_cell = tf.contrib.rnn.LSTMCell(self.lstm_size, state_is_tuple=True)
             lstm_cell = tf.contrib.rnn.DropoutWrapper(lstm_cell, output_keep_prob=self.keep_prob)
@@ -94,7 +93,7 @@ class LstmRNN(object):
                 name="embed_matrix"
             )
 
-    """
+            """
             _create_one_cell Method: This method is defined to create an LSTM cell. It uses TensorFlow's LSTMCell 
             and wraps it with a DropoutWrapper to apply dropout regularization during training.
             MultiRNNCell for Multiple Layers: The code then uses the _create_one_cell method to create either a single 
@@ -113,16 +112,15 @@ class LstmRNN(object):
             self.inputs_with_embed = tf.identity(self.inputs)
             self.embed_matrix_summ = None
 
-        print "inputs.shape:", self.inputs.shape
-        print "inputs_with_embed.shape:", self.inputs_with_embed.shape
-
-      """
-      Summary Operation for Embedding Matrix:
-      It creates a summary operation (tf.summary.histogram) for the embedding matrix, which can be useful for 
-       visualizing and tracking the distribution of values in the embedding matrix during training.
-      If embedding is not used, self.embed_matrix_summ is set to None.
-Print Statements: The code includes two print statements for informational purposes, displaying the shapes of self.inputs and self.inputs_with_embed"""
-
+        print ("inputs.shape:", self.inputs.shape)
+        print ("inputs_with_embed.shape:", self.inputs_with_embed.shape)
+    
+      
+    #   Summary Operation for Embedding Matrix:
+    #   It creates a summary operation (tf.summary.histogram) for the embedding matrix, which can be useful for 
+    #    visualizing and tracking the distribution of values in the embedding matrix during training.
+    #  If embedding is not used, self.embed_matrix_summ is set to None.
+#Print Statements: The code includes two print statements for informational purposes, displaying the shapes of self.inputs and self.inputs_with_embed
 
         # Run dynamic RNN
         val, state_ = tf.nn.dynamic_rnn(cell, self.inputs_with_embed, dtype=tf.float32, scope="dynamic_rnn")
@@ -204,14 +202,14 @@ Print Statements: The code includes two print statements for informational purpo
             projector.visualize_embeddings(self.writer, projector_config)
 
         tf.global_variables_initializer().run()
-"""
-     Dataset List Validation: It checks if the provided list of datasets is not empty.
-     Summary Merging: self.merged_sum is created by merging all summaries. T
-     Summary Writer: A tf.summary.FileWriter is initialized to write the summaries to the specified logs directory.
-     The graph of the TensorFlow session (self.sess.graph) is added to the writer for visualization in TensorBoard.
-     Embedding Visualization (if applicable): If the model uses embedding, it sets up the configuration for embedding visualization.
-     Global Variable Initialization: Global variables are initialized to prepare the model for training or evaluation.
-"""
+
+    # Dataset List Validation: It checks if the provided list of datasets is not empty.
+    # Summary Merging: self.merged_sum is created by merging all summaries. T
+    # Summary Writer: A tf.summary.FileWriter is initialized to write the summaries to the specified logs directory.
+    # The graph of the TensorFlow session (self.sess.graph) is added to the writer for visualization in TensorBoard.
+    # Embedding Visualization (if applicable): If the model uses embedding, it sets up the configuration for embedding visualization.
+    # Global Variable Initialization: Global variables are initialized to prepare the model for training or evaluation.
+
         # Merged test data of different stocks.
         merged_test_X = []
         merged_test_y = []
@@ -226,9 +224,9 @@ Print Statements: The code includes two print statements for informational purpo
         merged_test_y = np.array(merged_test_y)
         merged_test_labels = np.array(merged_test_labels)
 
-        print "len(merged_test_X) =", len(merged_test_X)
-        print "len(merged_test_y) =", len(merged_test_y)
-        print "len(merged_test_labels) =", len(merged_test_labels)
+        print ("len(merged_test_X) =", len(merged_test_X))
+        print ("len(merged_test_y) =", len(merged_test_y))
+        print ("len(merged_test_labels) =", len(merged_test_labels))
 
     # Data Merging: Three lists are initialized to store the merged test data.
     # The code then iterates over the provided dataset list and concatenates the test data from each dataset to the corresponding merged lists.
@@ -264,9 +262,9 @@ Print Statements: The code includes two print statements for informational purpo
                 i for i, sym_label in enumerate(merged_test_labels)
                 if sym_label[0] == l])
             sample_indices[sym] = target_indices
-        print sample_indices
+        print (sample_indices)
 
-        print "Start training for stocks:", [d.stock_sym for d in dataset_list]
+        print ("Start training for stocks:", [d.stock_sym for d in dataset_list])
 
 
     
@@ -320,8 +318,9 @@ Print Statements: The code includes two print statements for informational purpo
                     if np.mod(global_step, len(dataset_list) * 200 / config.input_size) == 1:
                         test_loss, test_pred = self.sess.run([self.loss_test, self.pred], test_data_feed)
 
-                        print "Step:%d [Epoch:%d] [Learning rate: %.6f] train_loss:%.6f test_loss:%.6f" % (
-                            global_step, epoch, learning_rate, train_loss, test_loss)
+                        print("Step: %d [Epoch: %d] [Learning rate: %.6f] train_loss: %.6f test_loss: %.6f" % (
+                            global_step, epoch, learning_rate, train_loss, test_loss))
+
 
                         # Plot samples
                         for sample_sym, indices in sample_indices.iteritems():
